@@ -9,7 +9,6 @@ import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const { orderItems, shippingAddress, paymentMethod } = req.body;
-
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
@@ -20,15 +19,17 @@ const addOrderItems = asyncHandler(async (req, res) => {
     // side code - https://gist.github.com/bushblade/725780e6043eaf59415fbaf6ca7376ff
 
     // get the ordered items from our database
+    //find returns and array of documents
     const itemsFromDB = await Product.find({
-      _id: { $in: orderItems.map((x) => x._id) },
+      'unique_id': { $in: orderItems.map((x) => x.unique_id) },
     });
-
     // map over the order items and use the price from our items from database
     const dbOrderItems = orderItems.map((itemFromClient) => {
       const matchingItemFromDB = itemsFromDB.find(
-        (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
+        (itemFromDB) => Number(itemFromDB.unique_id) == Number(itemFromClient.unique_id)
       );
+      
+      
       return {
         ...itemFromClient,
         product: itemFromClient._id,

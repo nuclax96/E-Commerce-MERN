@@ -34,9 +34,9 @@ const Header = () => {
     <header>
       <Navbar bg='primary' variant='dark' expand='lg' collapseOnSelect>
         <Container>
-          <Navbar.Brand as={Link} to='/'>
-            <img src={logo} alt='ProShop' />
-            ProShop
+          <Navbar.Brand style={{alignItems:'center'}} as={Link} to='/'>
+            <img className='logo' style={{width:'5%',marginRight:'10px'}} src={logo} alt='ProShop' />
+            Express-Mart
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>

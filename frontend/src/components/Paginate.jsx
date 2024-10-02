@@ -1,11 +1,11 @@
 import React from 'react';
 import { Pagination } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, Navigate,useNavigate } from 'react-router-dom';
 
 const Paginate = ({ pages, page, isAdmin = false, keyword = '' }) => {
   const pageLimit = 5; // Number of pages to show around the current page
   const displayPages = 10; // Number of total pages to display including ellipses
-
+  const navigate= useNavigate();
   const generatePageNumbers = () => {
     const pageNumbers = [];
 
@@ -48,6 +48,22 @@ const Paginate = ({ pages, page, isAdmin = false, keyword = '' }) => {
     return pageNumbers;
   };
 
+  const onClickHandler = (number,isAdmin)=>{
+      if(!isAdmin)
+      {
+        if(keyword)
+        {
+          navigate(`/search/${keyword}/page/${number}`)
+        }else
+        {
+          navigate(`/page/${number}`)
+        }
+      }else
+      {
+        navigate(`/admin/productlist/${number}`)
+      }
+  }
+
   return (
     pages > 1 && (
       <div className="d-flex justify-content-center align-items-center my-3">
@@ -66,21 +82,19 @@ const Paginate = ({ pages, page, isAdmin = false, keyword = '' }) => {
           )}
           {generatePageNumbers().map((number, index) =>
             number === '...' ? (
-              <Pagination.Ellipsis key={index} />
+              <Pagination.Ellipsis key={`${index}_ellipsis`} />
             ) : (
               <Pagination.Item
+                onClick={()=>{
+                  onClickHandler(number,isAdmin)
+                }}
                 as={Link}
                 key={number}
-                to={
-                  !isAdmin
-                    ? keyword
-                      ? `/search/${keyword}/page/${number}`
-                      : `/page/${number}`
-                    : `/admin/productlist/${number}`
-                }
                 active={number === page}
               >
-                {number}
+                 
+                  {number}
+                
               </Pagination.Item>
             )
           )}
