@@ -1,7 +1,56 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const email = req.body.email;
+    const currentPassword = req.body.currentPassword ;
+    const newPassword = req.body.newPassword ;
+
+    const user = await User.findOne({email: email});
+
+    if(user && !(await user.matchPassword(currentPassword))) {
+        res.status(401);
+        res.send({message: 'Invalid password'});
+        throw new Error('Invalid password');
+    }
+
+    user.password = newPassword;
+    try{
+      await user.save();
+      res.status(200);
+      res.send({message: 'Password changed successfully'});
+    }
+    catch(err){ 
+      res.status(400);
+      throw new Error('Could not save password');
+    }
+    
+  });
+
+/**
+ * @route POST /api/users/forgot-password
+ * @desc Send password reset email
+ */
+
+const confirmEmail = asyncHandler(async (req, res) => {
+    const email = req.body.email;
+
+    const user = await User.findOne({email: email});
+    if(!user){
+        console.log('User not found');
+        res.status(404);
+        // throw new Error('User not found');
+    }
+    res.status(200);
+    res.json({ message: 'Email exists', email: user.email });
+  }
+);
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
 // @access  Public
@@ -189,4 +238,6 @@ export {
   deleteUser,
   getUserById,
   updateUser,
+  confirmEmail,
+  resetPassword
 };
