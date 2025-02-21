@@ -73,14 +73,21 @@ const LoginScreen = () => {
         {isLoading && <Loader />}
       </Form>
 
-      <Row className='py-3'>
-        <Col>
+      <Row className="py-3 d-flex justify-content-between">
+        <Col className="text-start">
           New Customer?{' '}
           <Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>
             Register
           </Link>
         </Col>
-      </Row>
+        <Col className="text-end">
+          Forgot Password?{' '}
+          <Link to={redirect ? `/forgotPassword?redirect=${redirect}` : '/forgotpassword'}>
+            Reset
+          </Link>
+        </Col>
+    </Row>
+
     </FormContainer>
   );
 };
